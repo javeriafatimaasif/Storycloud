@@ -1,82 +1,112 @@
-# ✿ JAVYRIYAH — Silent Safety Signal Protocol
+# 📚 StoryCloud
 
-A discreet safety application disguised as a standard calculator.
-When a user types **1805**, it silently triggers an emergency signal,
-shares their live GPS location, and notifies emergency responders.
+StoryCloud is a mood-based book recommendation web application built with Flask. Instead of searching through endless book lists, users simply choose how they're feeling, and StoryCloud suggests books that match their mood.
 
----
+The application includes a collection of public-domain classics, immersive reading pages, and a playful, colorful user interface designed to make discovering books enjoyable and accessible.
 
-## 🌸 Features
+## ✨ Features
 
-- **Disguised UI** — Looks and works like a real calculator
-- **Silent Trigger** — Code `1805` activates emergency mode invisibly
-- **Live GPS Tracking** — Continuous location updates sent to responders
-- **Emergency Dashboard** — Authority-facing panel with real-time alerts
-- **SQLite Database** — All alerts persisted with timestamps and coordinates
-- **Auto-refresh** — Dashboard polls every 15 seconds for new signals
-- **Google Maps Links** — Direct links to victim coordinates
+* 🎭 Mood-based book recommendations
+* 📖 Built-in reading experience
+* 🌈 Beautiful and interactive user interface
+* 📚 Curated collection of classic literature
+* ⚡ Fast Flask backend
+* 📱 Responsive design for desktop and mobile devices
+* 🎨 Animated and engaging visual elements
 
----
+## 🛠️ Technologies Used
 
-## 🚀 Setup & Run
+* Python
+* Flask
+* HTML5
+* CSS3
+* JavaScript
+* JSON
+
+## 📂 Project Structure
+
+```text
+StoryCloud/
+│
+├── app.py          # Flask backend and book data
+├── index.html      # Frontend user interface
+└── README.md
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure you have:
+
+* Python 3.8 or higher
+* Flask installed
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-# 1. Navigate to project folder
-cd javyriyah
+git clone https://github.com/javeriafatimaasif/Storycloud.git
+```
 
-# 2. Create virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate        # macOS/Linux
-venv\Scripts\activate           # Windows
+2. Navigate to the project directory:
 
-# 3. Install dependencies
-pip install -r requirements.txt
+```bash
+cd Storycloud
+```
 
-# 4. Run the app
+3. Install Flask:
+
+```bash
+pip install flask
+```
+
+4. Run the application:
+
+```bash
 python app.py
 ```
 
-Then open:
-- **User view (calculator):** http://localhost:5000/
-- **Authority dashboard:**    http://localhost:5000/dashboard
+5. Open your browser and visit:
 
----
-
-## 🔐 How the Silent Signal Works
-
-1. User opens the app — sees only a beautiful calculator
-2. User types `1805` in any calculation
-3. App silently:
-   - Requests GPS coordinates
-   - Sends POST to `/api/trigger-alert`
-   - Begins continuous location tracking
-   - Displays a gentle confirmation modal
-4. Dashboard shows ACTIVE alert with coordinates + map link
-5. Operator clicks "Resolve" once rescue is complete
-
----
-
-## 📁 Project Structure
-
-```
-javyriyah/
-├── app.py                  # Flask backend + SQLAlchemy models
-├── requirements.txt
-├── javyriyah.db            # Auto-created SQLite database
-└── templates/
-    ├── index.html          # Calculator UI (disguised user app)
-    └── dashboard.html      # Emergency response dashboard
+```text
+http://127.0.0.1:5000
 ```
 
----
+## 🎯 How It Works
 
-## ⚠️ Important Notes
+1. Select a mood from the available options.
+2. StoryCloud matches your mood with books in its collection.
+3. Browse recommended titles.
+4. Open a book and start reading directly within the application.
 
-- In production, **secure the `/dashboard` route with authentication**
-- Consider adding **SMS/email alerts** via Twilio/SendGrid on trigger
-- For deployment, use HTTPS to ensure location API works on mobile
-- The secret code `1805` can be changed in `app.py` and `index.html`
+## 📚 Sample Moods
 
----
+* Romantic ❤️
+* Adventurous 🗺️
+* Curious 🔍
+* Whimsical ✨
+* Playful 🎈
+* Classic 📜
+* Social 🤝
+* Witty 💬
 
-*✿ Built with care. May it keep someone safe. ✿*
+## 🌟 Future Improvements
+
+* User accounts and profiles
+* Personalized reading history
+* Bookmarks and favorites
+* Expanded book library
+* AI-powered recommendations
+* Dark mode support
+
+## 👩‍💻 Author
+
+**Javeria Fatima Asif**
+
+GitHub: https://github.com/javeriafatimaasif
+
+## 📄 License
+
+This project is created for educational and portfolio purposes. Public-domain literary works remain the property of their respective authors and are included in accordance with public-domain availability.
