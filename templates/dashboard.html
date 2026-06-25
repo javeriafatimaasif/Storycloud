@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JAVYRIYAH — Emergency Response Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blush: #f5d6e0; --rose: #e8a4b8; --petal: #f9e8f0;
+      --lavender: #e8d5f0; --lilac: #c9a8d4; --mint: #d4ede8;
+      --sage: #a8c9b8; --cream: #fdf6f0; --gold: #d4a574;
+      --deep: #6b3d5a; --text: #4a2d3a; --muted: #9b7a8a;
+      --danger: #e07090; --safe: #7cc4a8; --pending: #d4a574;
+      --sidebar-w: 260px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 0% 0%,   rgba(232,164,184,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 100% 100%, rgba(201,168,212,0.12) 0%, transparent 60%);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: linear-gradient(175deg, rgba(107,61,90,0.95), rgba(75,40,62,0.98));
+      backdrop-filter: blur(20px);
+      position: fixed; left: 0; top: 0; bottom: 0; z-index: 10;
+      display: flex; flex-direction: column;
+      padding: 32px 20px;
+      border-right: 1px solid rgba(232,164,184,0.15);
+    }
+
+    .sidebar-logo {
+      text-align: center; margin-bottom: 40px;
+    }
+    .logo-flower { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+    .logo-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 400;
+      letter-spacing: 0.2em; color: var(--blush);
+      text-transform: uppercase;
+    }
+    .logo-tagline {
+      font-size: 0.65rem; color: rgba(245,214,224,0.45);
+      letter-spacing: 0.15em; margin-top: 4px;
+    }
+
+    .nav-section { margin-bottom: 8px; }
+    .nav-label {
+      font-size: 0.6rem; letter-spacing: 0.2em;
+      color: rgba(245,214,224,0.35);
+      text-transform: uppercase; padding: 0 12px;
+      margin-bottom: 6px; margin-top: 20px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 12px; border-radius: 12px;
+      color: rgba(245,214,224,0.65);
+      font-size: 0.875rem; cursor: pointer;
+      transition: all 0.2s; margin-bottom: 2px;
+      text-decoration: none;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(232,164,184,0.15);
+      color: var(--blush);
+    }
+    .nav-item.active { background: rgba(232,164,184,0.2); color: white; }
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      text-align: center;
+      font-size: 0.65rem;
+      color: rgba(245,214,224,0.25);
+      letter-spacing: 0.1em;
+      line-height: 1.8;
+    }
+
+    /* ── Main ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 40px;
+      position: relative; z-index: 1;
+      overflow-y: auto;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; margin-bottom: 36px;
+    }
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 400; color: var(--deep);
+      letter-spacing: -0.01em;
+    }
+    .page-sub { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .badge-live {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(224,112,144,0.12);
+      border: 1px solid rgba(224,112,144,0.3);
+      color: var(--danger);
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em;
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--danger);
+      animation: blink 1.2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* ── Stat cards ── */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+
+    .stat-card {
+      background: rgba(253,246,240,0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid rgba(232,164,184,0.25);
+      padding: 24px;
+      box-shadow: 0 2px 16px rgba(107,61,90,0.06);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem; font-weight: 300; color: var(--deep); line-height: 1;
+    }
+    .stat-note { font-size: 0.7rem; color: var(--muted); margin-top: 6px; }
+
+    .stat-card.danger  { border-color: rgba(224,112,144,0.35); background: rgba(255,240,245,0.85); }
+    .stat-card.danger .stat-value { color: var(--danger); }
+    .stat-card.safe    { border-color: rgba(124,196,168,0.35); background: rgba(240,252,248,0.85); }
+    .stat-card.safe .stat-value   { color: var(--safe); }
+
+    /* ── Section header ── */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem; color: var(--deep);
+    }
+    .section-floral { color: var(--rose); margin-right: 8px; opacity: 0.6; }
+
+    .refresh-btn {
+      background: rgba(232,164,184,0.15); border: 1px solid rgba(232,164,184,0.3);
+      color: var(--muted); border-radius: 10px; padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover { background: rgba(232,164,184,0.3); color: var(--deep); }
+
+    /* ── Alerts table ── */
+    .alerts-wrap {
+      background: rgba(253,246,240,0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid rgba(232,164,184,0.25);
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(107,61,90,0.06);
+    }
+
+    table {
+      width: 100%; border-collapse: collapse;
+    }
+    thead th {
+      padding: 16px 20px;
+      font-size: 0.7rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+      font-weight: 500;
+      background: rgba(245,214,224,0.2);
+      text-align: left;
+      border-bottom: 1px solid rgba(232,164,184,0.2);
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(232,164,184,0.12);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(249,232,240,0.4); }
+    tbody td {
+      padding: 15px 20px;
+      font-size: 0.85rem; color: var(--text);
+    }
+
+    .alert-id-chip {
+      font-size: 0.7rem; letter-spacing: 0.08em;
+      color: var(--muted); background: rgba(232,213,240,0.3);
+      padding: 3px 8px; border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em;
+    }
+    .status-ACTIVE   { background: rgba(224,112,144,0.12); color: var(--danger); border: 1px solid rgba(224,112,144,0.25); }
+    .status-RESOLVED { background: rgba(124,196,168,0.12); color: var(--safe);   border: 1px solid rgba(124,196,168,0.25); }
+    .status-FALSE_ALARM { background: rgba(212,165,116,0.12); color: var(--pending); border: 1px solid rgba(212,165,116,0.25); }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    .map-link {
+      font-size: 0.75rem; color: var(--lilac); text-decoration: none;
+      border-bottom: 1px dashed rgba(201,168,212,0.5);
+      transition: color 0.2s;
+    }
+    .map-link:hover { color: var(--deep); }
+
+    .action-btn {
+      background: none; border: 1px solid rgba(232,164,184,0.4);
+      color: var(--muted); border-radius: 8px;
+      padding: 5px 10px; font-size: 0.72rem; cursor: pointer;
+      transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+    }
+    .action-btn:hover { background: rgba(232,164,184,0.2); color: var(--deep); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      padding: 60px; text-align: center; color: var(--muted);
+    }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+    .empty-text { font-size: 0.9rem; }
+
+    /* ── Map preview panel ── */
+    .map-panel {
+      background: rgba(253,246,240,0.85);
+      border-radius: 20px; border: 1px solid rgba(232,164,184,0.25);
+      padding: 24px; margin-top: 24px;
+      box-shadow: 0 2px 16px rgba(107,61,90,0.06);
+    }
+    #map {
+      width: 100%; height: 320px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(245,214,224,0.3), rgba(232,213,240,0.3));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 0.85rem;
+      border: 1px solid rgba(232,164,184,0.2);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(232,164,184,0.4); border-radius: 3px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .main { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-flower">✿</span>
+    <div class="logo-name">Javyriyah</div>
+    <div class="logo-tagline">Silent Safety Network</div>
+  </div>
+
+  <p class="nav-label">Navigation</p>
+  <a class="nav-item active" href="/dashboard">
+    <span class="nav-icon">🌸</span> Dashboard
+  </a>
+  <a class="nav-item" href="/">
+    <span class="nav-icon">📱</span> User App
+  </a>
+
+  <p class="nav-label">System</p>
+  <a class="nav-item" href="#" onclick="loadAlerts()">
+    <span class="nav-icon">🔄</span> Refresh Data
+  </a>
+
+  <div class="sidebar-footer">
+    JAVYRIYAH v1.0<br>
+    Silent Signal Protocol<br>
+    ✿ Protected & Confidential ✿
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="main">
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Emergency Response Dashboard</div>
+      <div class="page-sub">Real-time monitoring · Silent signal tracking · Rescue coordination</div>
+    </div>
+    <div class="header-actions">
+      <div class="badge-live"><span class="live-dot"></span> LIVE</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card danger">
+      <div class="stat-label">Active Alerts</div>
+      <div class="stat-value" id="stat-active">—</div>
+      <div class="stat-note">Require immediate response</div>
+    </div>
+    <div class="stat-card safe">
+      <div class="stat-label">Resolved</div>
+      <div class="stat-value" id="stat-resolved">—</div>
+      <div class="stat-note">Successfully handled</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Signals</div>
+      <div class="stat-value" id="stat-total">—</div>
+      <div class="stat-note">All time</div>
+    </div>
+  </div>
+
+  <!-- Alerts table -->
+  <div class="section-head">
+    <div class="section-title"><span class="section-floral">✿</span>Emergency Signals</div>
+    <button class="refresh-btn" onclick="loadAlerts()">↻ Refresh</button>
+  </div>
+
+  <div class="alerts-wrap">
+    <table id="alertsTable">
+      <thead>
+        <tr>
+          <th>Alert ID</th>
+          <th>Status</th>
+          <th>Location</th>
+          <th>Coordinates</th>
+          <th>Triggered</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="alertsBody">
+        <tr><td colspan="6">
+          <div class="empty-state">
+            <div class="empty-icon">✿</div>
+            <div class="empty-text">Loading alerts…</div>
+          </div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Map panel -->
+  <div class="map-panel">
+    <div class="section-head" style="margin-bottom:14px">
+      <div class="section-title"><span class="section-floral">✿</span>Location Tracking</div>
+    </div>
+    <div id="map">
+      <div style="text-align:center">
+        <div style="font-size:2rem;margin-bottom:8px;opacity:0.3">🗺️</div>
+        <div>Click an alert's coordinates to view on map</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+async function loadStats() {
+  try {
+    const r = await fetch('/api/stats');
+    const d = await r.json();
+    document.getElementById('stat-active').textContent   = d.active;
+    document.getElementById('stat-resolved').textContent = d.resolved;
+    document.getElementById('stat-total').textContent    = d.total;
+  } catch(e) {}
+}
+
+async function loadAlerts() {
+  try {
+    const r = await fetch('/api/alerts');
+    const alerts = await r.json();
+    const tbody = document.getElementById('alertsBody');
+
+    if (!alerts.length) {
+      tbody.innerHTML = `<tr><td colspan="6">
+        <div class="empty-state">
+          <div class="empty-icon">✿</div>
+          <div class="empty-text">No alerts yet. The network is monitoring.</div>
+        </div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = alerts.map(a => {
+      const id  = a.id ? a.id.split('-')[0].toUpperCase() : '—';
+      const lat = a.lat ? a.lat.toFixed(5) : '—';
+      const lng = a.lng ? a.lng.toFixed(5) : '—';
+      const mapsUrl = a.lat && a.lng
+        ? `https://www.google.com/maps?q=${a.lat},${a.lng}`
+        : '#';
+      const time = a.triggered_at
+        ? new Date(a.triggered_at).toLocaleString()
+        : '—';
+      const status = a.status || 'ACTIVE';
+
+      return `<tr>
+        <td><span class="alert-id-chip">${id}</span></td>
+        <td><span class="status-badge status-${status}">
+          <span class="status-dot"></span>${status.replace('_',' ')}
+        </span></td>
+        <td>${a.address || '—'}</td>
+        <td>
+          ${a.lat ? `<a class="map-link" href="${mapsUrl}" target="_blank">${lat}, ${lng}</a>` : '—'}
+        </td>
+        <td style="color:var(--muted);font-size:0.8rem">${time}</td>
+        <td>
+          ${status === 'ACTIVE'
+            ? `<button class="action-btn" onclick="resolveAlert('${a.id}')">✓ Resolve</button>`
+            : '<span style="color:var(--muted);font-size:0.75rem">—</span>'}
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+async function resolveAlert(id) {
+  await fetch('/api/resolve-alert', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ alert_id: id, status: 'RESOLVED', notes: 'Resolved by operator' })
+  });
+  loadAlerts(); loadStats();
+}
+
+// Init
+loadStats();
+loadAlerts();
+// Auto-refresh every 15s
+setInterval(() => { loadStats(); loadAlerts(); }, 15000);
+</script>
+
+</body>
+</html>
